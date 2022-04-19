@@ -730,6 +730,18 @@ class Listeners {
       } else if (!done && player.playing) {
         seek.setAttribute(attribute, '');
         player.pause();
+
+
+        // Copy of code from seek input bind
+        let seekTo = seek.getAttribute('seek-value');
+
+        if (is.empty(seekTo)) {
+          seekTo = seek.value;
+        }
+
+        seek.removeAttribute('seek-value');
+
+        player.currentTime = (seekTo / seek.max) * player.duration;
       }
     });
 
