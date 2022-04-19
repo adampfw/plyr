@@ -4795,23 +4795,23 @@ class Listeners {
 
         const play = seek.hasAttribute(attribute); // Done seeking
 
-        const done = ['mouseup', 'touchend', 'keyup'].includes(event.type); // If we're done seeking and it was playing, resume playback
+        const done = ['mouseup', 'touchend', 'keyup'].includes(event.type); // Copy of code from seek input bind
+
+        let seekTo = seek.getAttribute('seek-value');
+
+        if (is.empty(seekTo)) {
+          seekTo = seek.value;
+        }
+
+        seek.removeAttribute('seek-value');
+        player.currentTime = seekTo / seek.max * player.duration; // If we're done seeking and it was playing, resume playback
 
         if (play && done) {
           seek.removeAttribute(attribute);
           silencePromise(player.play());
         } else if (!done && player.playing) {
           seek.setAttribute(attribute, '');
-          player.pause(); // Copy of code from seek input bind
-
-          let seekTo = seek.getAttribute('seek-value');
-
-          if (is.empty(seekTo)) {
-            seekTo = seek.value;
-          }
-
-          seek.removeAttribute('seek-value');
-          player.currentTime = seekTo / seek.max * player.duration;
+          player.pause();
         }
       }); // Fix range inputs on iOS
       // Super weird iOS bug where after you interact with an <input type="range">,
