@@ -4692,7 +4692,10 @@ typeof navigator === "object" && (function (global, factory) {
         } = this;
         const {
           elements
-        } = player; // IE doesn't support input event, so we fallback to change
+        } = player; // NOTE: Currently only using change to avoid indirect over-eager segment fetch
+        // requests for HTTP Adaptive Streaming cases, since 'change' will only fire
+        // after the thumb is released for an input[type=range] (CJP).
+        // IE doesn't support input event, so we fallback to change
         // const inputEvent = browser.isIE ? 'change' : 'input';
 
         const inputEvent = 'change'; // Play/pause toggle
@@ -4805,7 +4808,16 @@ typeof navigator === "object" && (function (global, factory) {
             silencePromise(player.play());
           } else if (!done && player.playing) {
             seek.setAttribute(attribute, '');
-            player.pause();
+            player.pause(); // Copy of code from seek input bind
+
+            let seekTo = seek.getAttribute('seek-value');
+
+            if (is.empty(seekTo)) {
+              seekTo = seek.value;
+            }
+
+            seek.removeAttribute('seek-value');
+            player.currentTime = seekTo / seek.max * player.duration;
           }
         }); // Fix range inputs on iOS
         // Super weird iOS bug where after you interact with an <input type="range">,
