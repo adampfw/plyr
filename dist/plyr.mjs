@@ -2756,8 +2756,8 @@ const controls = {
       if (control === 'download') {
         const attributes = extend({}, defaultAttributes, {
           element: 'a',
-          href: this.download // target: '_blank',
-
+          href: this.download,
+          target: '_blank'
         }); // Set download attribute for HTML5 only
 
         if (this.isHTML5) {
@@ -4276,10 +4276,13 @@ const ui = {
       }
     }).then(() => {
       Object.assign(this.elements.poster.style, {
-        backgroundImage: `url('${poster}')`,
+        // backgroundImage: `url('${poster}')`,
         // Reset backgroundSize as well (since it can be set to "cover" for padded thumbnails for youtube)
         backgroundSize: ''
-      });
+      }); // Prepare poster for lazyload using lazysizes package
+
+      this.elements.poster.classList.add('lazyload');
+      this.elements.poster.dataset.bg = `url('${poster}')`;
       ui.togglePoster.call(this, true);
       return poster;
     });

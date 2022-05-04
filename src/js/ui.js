@@ -205,10 +205,14 @@ const ui = {
         })
         .then(() => {
           Object.assign(this.elements.poster.style, {
-            backgroundImage: `url('${poster}')`,
+            // backgroundImage: `url('${poster}')`,
             // Reset backgroundSize as well (since it can be set to "cover" for padded thumbnails for youtube)
             backgroundSize: '',
           });
+
+          // Prepare poster for lazyload using lazysizes package
+          this.elements.poster.classList.add('lazyload')
+          this.elements.poster.dataset.bg = `url('${poster}')`
 
           ui.togglePoster.call(this, true);
 
